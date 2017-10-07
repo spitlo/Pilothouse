@@ -20,7 +20,8 @@ const createCommand = function(argv) {
 			choices: [
 				{ name: 'Laravel', value: 'laravel', short: 'Laravel' },
 				{ name: 'PHP', value: 'php', short: 'PHP' },
-				{ name: 'WordPress', value: 'wordpress', short: 'WordPress' }
+				{ name: 'WordPress', value: 'wordpress', short: 'WordPress' },
+				{ name: 'Proxy', value: 'proxy', short: 'Proxy' }
 			],
 			default: 'php'
 		},
@@ -32,7 +33,8 @@ const createCommand = function(argv) {
                 { name: 'Global default', value: 'globalDefault', short: 'Global default' },
                 { name: '5.6', value: '5.6', short: '5.6' },
                 { name: '7.0', value: '7.0', short: '7.0' },
-                { name: '7.1', value: '7.1', short: '7.1' }
+                { name: '7.1', value: '7.1', short: '7.1' },
+                { name: 'None', value: 'none', short: 'None' },
             ],
             default: 'globalDefault'
         }
@@ -136,6 +138,22 @@ const createCommand = function(argv) {
 				inquirer.prompt(phpQuestions).then(function(phpAnswers) {
 
 					config.create_database = phpAnswers.createDatabase;
+
+					sites.createSite(siteToCreate, config);
+				});
+			} else if ('proxy' === basicAnswers.type) {
+
+				const proxyQuestions = [
+					{
+						name: 'proxyPort',
+						type: 'input',
+						message: 'What port should I proxy to?'
+					}
+				];
+
+				inquirer.prompt(proxyQuestions).then(function(proxyAnswers) {
+
+					config.proxy_port = proxyAnswers.proxyPort;
 
 					sites.createSite(siteToCreate, config);
 				});

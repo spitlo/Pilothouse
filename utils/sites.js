@@ -52,6 +52,11 @@ function buildNginxConfigForSite(site) {
 		templateVars.wp_uploads_proxy_config = helpers.populateTemplate(wpUploadsProxyTemplate, {wp_uploads_proxy_url: siteSettings.wp_uploads_proxy_url});
 	}
 
+	// Add proxy port if applicable.
+	if (siteSettings.proxy_port) {
+		templateVars.proxy_port = siteSettings.proxy_port
+	}
+
 	return helpers.populateTemplate(templateData, templateVars);
 }
 
@@ -77,7 +82,13 @@ function createSite(siteName, siteConfig) {
     	configFileSettings.wp_uploads_proxy_url = siteConfig.wp_uploads_proxy_url;
 	}
 
-	fs.ensureDirSync(path.join(config.sites_directory, siteName, 'htdocs'));
+	if (siteConfig.proxy_port) {
+		let proxyPort = siteConfig.proxy_port
+		configFileSettings.proxy_port = siteConfig.proxy_port;
+		fs.ensureDirSync(path.join(config.sites_directory, siteName));
+	} else {
+		fs.ensureDirSync(path.join(config.sites_directory, siteName, 'htdocs'));
+	}
 
 	if ('laravel' === siteConfig.type || 'wordpress' === siteConfig.type || siteConfig.create_database) {
 		commands.mysqlCommand('CREATE DATABASE IF NOT EXISTS `' + siteName + '`;');
@@ -259,9 +270,13 @@ function getSiteSettings(site) {
 		hosts: [site + '.dev'],
 		type: 'php',
 		wp_uploads_proxy_url: null,
+		proxy_port: null
 	};
 
-	if (fs.existsSync(path.join(config.sites_directory, site, 'htdocs/artisan'))) {
+	if (!fs.existsSync(path.join(config.sites_directory, site, 'htdocs'))) {
+		defaults.type = 'proxy';
+	}
+	else if (fs.existsSync(path.join(config.sites_directory, site, 'htdocs/artisan'))) {
 		defaults.type = 'laravel';
 	}
 	else if (fs.existsSync(path.join(config.sites_directory, site, 'htdocs/wp-config.php'))) {
@@ -339,8 +354,8 @@ function isValidSite(item) {
 		return false;
 	}
 
-	// Return false if there is not an htdocs directory inside.
-	if (!fs.existsSync(path.join(fullPath, 'htdocs'))) {
+	// Return false if there is neither an htdocs directory nor a config.yml file inside.
+	if (!fs.existsSync(path.join(fullPath, 'htdocs')) && !fs.existsSync(path.join(fullPath, 'config.yml'))) {
 		return false;
 	}
 
