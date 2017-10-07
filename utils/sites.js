@@ -54,7 +54,21 @@ function buildNginxConfigForSite(site) {
 
 	// Add proxy port if applicable.
 	if (siteSettings.proxy_port) {
-		templateVars.proxy_port = siteSettings.proxy_port
+		// Until Docker provides consistant hostname for hostmachines,
+		// we need to check what OS we're on.
+		// Read more: https://github.com/docker/for-mac/issues/1679
+		let proxy_host
+		if (process.platform === 'darwin') {
+			proxy_host = 'docker.for.mac.localhost';
+		} else if (process.platform === 'win32') {
+			// This is untested
+			proxy_host = 'docker.for.windows.localhost';
+		} else {
+			// This is untested
+			proxy_host = '172.17.42.1';
+		}
+		templateVars.proxy_host = proxy_host;
+		templateVars.proxy_port = siteSettings.proxy_port;
 	}
 
 	return helpers.populateTemplate(templateData, templateVars);
@@ -83,7 +97,6 @@ function createSite(siteName, siteConfig) {
 	}
 
 	if (siteConfig.proxy_port) {
-		let proxyPort = siteConfig.proxy_port
 		configFileSettings.proxy_port = siteConfig.proxy_port;
 		fs.ensureDirSync(path.join(config.sites_directory, siteName));
 	} else {
