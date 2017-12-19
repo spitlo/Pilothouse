@@ -56,17 +56,14 @@ function buildRunFiles() {
 	sites.updateSitesNginxConfig();
 
 	// Generate hosts.
-	let hostsContent = '';
+	let hostsContent = "127.0.0.1 mysql\n";
 	hosts.forEach(function(host) {
 		hostsContent += '127.0.0.1 ' + host + "\n";
 	});
 	fs.outputFileSync(environment.runDirectory + '/hosts.txt', hostsContent);
 
-	// Generate the HTTPS certificate if it does not exist.
-	if (!fs.existsSync(environment.httpsCertificateCertPath) || !fs.existsSync(environment.httpsCertificateKeyPath)) {
-		console.log('Generating global SSL certificate...');
-		commands.regenerateHTTPSCertificate(hosts);
-	}
+	// (Re)generate the HTTPS certificate.
+	commands.regenerateHTTPSCertificate(hosts);
 }
 
 /**
