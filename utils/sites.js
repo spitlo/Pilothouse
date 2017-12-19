@@ -367,8 +367,12 @@ function isValidSite(item) {
 		return false;
 	}
 
-	// Return false if there is neither an htdocs directory nor a config.yml file inside.
-	if (!fs.existsSync(path.join(fullPath, 'htdocs')) && !fs.existsSync(path.join(fullPath, 'config.yml'))) {
+	// Return false if there is neither an htdocs directory nor a config.yml or an nginx.conf file inside.
+	if (
+		!fs.existsSync(path.join(fullPath, 'htdocs')) &&
+		!fs.existsSync(path.join(fullPath, 'config.yml')) &&
+		!fs.existsSync(path.join(fullPath, 'nginx.conf'))
+	) {
 		return false;
 	}
 
