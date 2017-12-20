@@ -67,6 +67,7 @@ function getDefaultConfig() {
 		default_php_version: '7.0',
 		sites_directory: environment.homeDirectory + '/Sites',
 		wp_default_username: 'admin',
-		wp_default_password: 'password'
+		wp_default_password: 'password',
+		default_tld: 'test'
 	};
 }

@@ -88,7 +88,7 @@ function createSite(siteName, siteConfig) {
         configFileSettings.default_php_version = siteConfig.default_php_version;
     }
 
-	if (siteName + '.dev' !== siteConfig.domain) {
+	if (siteName + '.' + config.default_tld !== siteConfig.domain) {
 		configFileSettings.hosts = [siteConfig.domain];
 	}
 
@@ -280,7 +280,7 @@ function getSiteSettings(site) {
 	const configFile = path.join(config.sites_directory, site, 'config.yml');
 	const defaults = {
 		default_php_version: config.default_php_version,
-		hosts: [site + '.dev'],
+		hosts: [site + '.' + config.default_tld],
 		type: 'php',
 		wp_uploads_proxy_url: null,
 		proxy_port: null

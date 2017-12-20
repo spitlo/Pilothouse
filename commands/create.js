@@ -72,7 +72,7 @@ const createCommand = function(argv) {
 				type: 'input',
 				message: 'Local domain name to use:',
 				default: function() {
-					return (siteToCreate + '.dev').replace('_', '-').toLowerCase();
+					return (siteToCreate + '.' + config.default_tld).replace('_', '-').toLowerCase();
 				},
 				validate: function(answer) {
 					if (validator.isEmpty(answer)) {
